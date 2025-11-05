@@ -1,0 +1,16 @@
+{
+    "productos": {
+        "1": {
+            "id": 1,
+            "nombre": "Mesa Ikea",
+            "descripcion": "Mesa",
+            "categoria": "Ikea",
+            "precio": 230000.0,
+            "stock": 7,
+            "stock_minimo": 5
+        }
+    },
+    "requerimientos": {},
+    "next_product_id": 2,
+    "next_requerimiento_id": 1
+}

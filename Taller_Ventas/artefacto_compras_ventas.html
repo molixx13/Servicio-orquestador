@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module artefacto_compras_ventas</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">artefacto_compras_ventas</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cusuario%5Conedrive%5Cdocumentos%5Cuniversidad%5Csitemasdis%5Ctaller_ventas%5Cartefacto_compras_ventas.py">c:\users\usuario\onedrive\documentos\universidad\sitemasdis\taller_ventas\artefacto_compras_ventas.py</a></td></tr></table>
+    <p><span class="code">Módulo:&nbsp;artefacto_compras_ventas<br>
+Autor:&nbsp;Molixx13<br>
+Descripción:<br>
+---------------<br>
+Este&nbsp;programa&nbsp;implementa&nbsp;un&nbsp;artefacto&nbsp;de&nbsp;COMPRAS&nbsp;y&nbsp;VENTAS&nbsp;para&nbsp;una&nbsp;tienda&nbsp;de&nbsp;muebles.<br>
+Funciona&nbsp;como&nbsp;un&nbsp;servicio&nbsp;RPC&nbsp;(Remote&nbsp;Procedure&nbsp;Call)&nbsp;que&nbsp;permite&nbsp;registrar&nbsp;ventas&nbsp;y&nbsp;compras.<br>
+&nbsp;<br>
+El&nbsp;servicio&nbsp;permite:<br>
+-&nbsp;Registrar&nbsp;ventas&nbsp;realizadas&nbsp;por&nbsp;clientes&nbsp;(desde&nbsp;el&nbsp;módulo&nbsp;Tienda).<br>
+-&nbsp;Solicitar&nbsp;generación&nbsp;de&nbsp;facturas&nbsp;al&nbsp;módulo&nbsp;de&nbsp;Contabilidad.<br>
+-&nbsp;Recibir&nbsp;y&nbsp;almacenar&nbsp;facturas&nbsp;de&nbsp;contabilidad.<br>
+-&nbsp;Registrar&nbsp;compras&nbsp;realizadas&nbsp;a&nbsp;proveedores&nbsp;(desde&nbsp;el&nbsp;módulo&nbsp;AtenciónProveedores).<br>
+-&nbsp;Enviar&nbsp;las&nbsp;facturas&nbsp;de&nbsp;proveedores&nbsp;a&nbsp;contabilidad&nbsp;para&nbsp;su&nbsp;registro.<br>
+&nbsp;<br>
+IMPORTANTE:&nbsp;Este&nbsp;módulo&nbsp;NO&nbsp;genera&nbsp;facturas.&nbsp;Las&nbsp;facturas&nbsp;son&nbsp;generadas&nbsp;ÚNICAMENTE<br>
+por&nbsp;el&nbsp;módulo&nbsp;de&nbsp;Contabilidad.&nbsp;Si&nbsp;Contabilidad&nbsp;no&nbsp;está&nbsp;disponible,&nbsp;se&nbsp;registra<br>
+el&nbsp;error&nbsp;y&nbsp;se&nbsp;continúa&nbsp;sin&nbsp;factura.<br>
+&nbsp;<br>
+Arquitectura:<br>
+-------------<br>
+[Tienda]&nbsp;---------&gt;&nbsp;[Compras/Ventas]&nbsp;---------&gt;&nbsp;[Contabilidad]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<br>
+[AtenciónProveedores]&nbsp;-----┘<br>
+&nbsp;<br>
+Todo&nbsp;el&nbsp;sistema&nbsp;usa&nbsp;estructuras&nbsp;de&nbsp;datos&nbsp;simples&nbsp;(diccionarios)&nbsp;y&nbsp;notación&nbsp;JSON.<br>
+Está&nbsp;documentado&nbsp;de&nbsp;forma&nbsp;clara&nbsp;para&nbsp;que&nbsp;cualquiera&nbsp;pueda&nbsp;entender&nbsp;cómo&nbsp;funciona.</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="json.html">json</a><br>
+</td><td class="multicolumn"><a href="socket.html">socket</a><br>
+</td><td class="multicolumn"><a href="xmlrpc.html">xmlrpc</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-conectar_con_contabilidad"><strong>conectar_con_contabilidad</strong></a>()</dt><dd><span class="code">Establece&nbsp;una&nbsp;conexión&nbsp;RPC&nbsp;con&nbsp;el&nbsp;módulo&nbsp;de&nbsp;Contabilidad.<br>
+&nbsp;<br>
+Esta&nbsp;función&nbsp;crea&nbsp;un&nbsp;objeto&nbsp;cliente&nbsp;que&nbsp;permite&nbsp;llamar&nbsp;a&nbsp;métodos&nbsp;remotos<br>
+del&nbsp;servicio&nbsp;de&nbsp;Contabilidad&nbsp;como&nbsp;si&nbsp;fueran&nbsp;funciones&nbsp;locales.<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+ServerProxy&nbsp;o&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Objeto&nbsp;cliente&nbsp;para&nbsp;invocar&nbsp;métodos&nbsp;remotos&nbsp;de&nbsp;Contabilidad.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Retorna&nbsp;None&nbsp;si&nbsp;hay&nbsp;error&nbsp;en&nbsp;la&nbsp;conexión.<br>
+&nbsp;<br>
+Ejemplo&nbsp;de&nbsp;uso:<br>
+---------------<br>
+&gt;&gt;&gt;&nbsp;contabilidad&nbsp;=&nbsp;<a href="#-conectar_con_contabilidad">conectar_con_contabilidad</a>()<br>
+&gt;&gt;&gt;&nbsp;if&nbsp;contabilidad:<br>
+&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;factura&nbsp;=&nbsp;contabilidad.generar_factura(datos)</span></dd></dl>
+ <dl><dt><a name="-consultar_compras"><strong>consultar_compras</strong></a>()</dt><dd><span class="code">Retorna&nbsp;todas&nbsp;las&nbsp;compras&nbsp;registradas&nbsp;en&nbsp;el&nbsp;sistema.<br>
+&nbsp;<br>
+Método&nbsp;auxiliar&nbsp;para&nbsp;consultar&nbsp;el&nbsp;historial&nbsp;completo&nbsp;de&nbsp;compras&nbsp;a&nbsp;proveedores.<br>
+Útil&nbsp;para&nbsp;reportes,&nbsp;auditorías&nbsp;o&nbsp;sincronización&nbsp;de&nbsp;datos.<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+str&nbsp;(JSON)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;JSON&nbsp;con&nbsp;el&nbsp;diccionario&nbsp;completo&nbsp;de&nbsp;compras.</span></dd></dl>
+ <dl><dt><a name="-consultar_facturas"><strong>consultar_facturas</strong></a>()</dt><dd><span class="code">Retorna&nbsp;todas&nbsp;las&nbsp;facturas&nbsp;almacenadas&nbsp;en&nbsp;el&nbsp;sistema.<br>
+&nbsp;<br>
+NOTA:&nbsp;Solo&nbsp;contiene&nbsp;facturas&nbsp;que&nbsp;fueron&nbsp;recibidas&nbsp;exitosamente&nbsp;de&nbsp;Contabilidad.<br>
+Las&nbsp;ventas&nbsp;sin&nbsp;factura&nbsp;no&nbsp;aparecerán&nbsp;aquí.<br>
+&nbsp;<br>
+Método&nbsp;auxiliar&nbsp;para&nbsp;consultar&nbsp;el&nbsp;historial&nbsp;completo&nbsp;de&nbsp;facturas.<br>
+Útil&nbsp;para&nbsp;reportes,&nbsp;auditorías&nbsp;o&nbsp;sincronización&nbsp;de&nbsp;datos.<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+str&nbsp;(JSON)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;JSON&nbsp;con&nbsp;el&nbsp;diccionario&nbsp;completo&nbsp;de&nbsp;facturas&nbsp;recibidas&nbsp;de&nbsp;Contabilidad.</span></dd></dl>
+ <dl><dt><a name="-consultar_ventas"><strong>consultar_ventas</strong></a>()</dt><dd><span class="code">Retorna&nbsp;todas&nbsp;las&nbsp;ventas&nbsp;registradas&nbsp;en&nbsp;el&nbsp;sistema.<br>
+&nbsp;<br>
+Método&nbsp;auxiliar&nbsp;para&nbsp;consultar&nbsp;el&nbsp;historial&nbsp;completo&nbsp;de&nbsp;ventas.<br>
+Útil&nbsp;para&nbsp;reportes,&nbsp;auditorías&nbsp;o&nbsp;sincronización&nbsp;de&nbsp;datos.<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+str&nbsp;(JSON)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;JSON&nbsp;con&nbsp;el&nbsp;diccionario&nbsp;completo&nbsp;de&nbsp;ventas.</span></dd></dl>
+ <dl><dt><a name="-enviar_factura_a_contabilidad"><strong>enviar_factura_a_contabilidad</strong></a>(factura)</dt><dd><span class="code">Envía&nbsp;una&nbsp;factura&nbsp;recibida&nbsp;de&nbsp;un&nbsp;proveedor&nbsp;al&nbsp;módulo&nbsp;de&nbsp;Contabilidad&nbsp;para&nbsp;su&nbsp;registro.<br>
+&nbsp;<br>
+Esta&nbsp;función&nbsp;se&nbsp;usa&nbsp;cuando&nbsp;la&nbsp;empresa&nbsp;compra&nbsp;a&nbsp;un&nbsp;proveedor.&nbsp;La&nbsp;factura&nbsp;del&nbsp;proveedor<br>
+debe&nbsp;ser&nbsp;enviada&nbsp;a&nbsp;Contabilidad&nbsp;para&nbsp;que&nbsp;quede&nbsp;registrada&nbsp;en&nbsp;el&nbsp;sistema&nbsp;contable.<br>
+&nbsp;<br>
+IMPORTANTE:&nbsp;Llama&nbsp;al&nbsp;método&nbsp;recibirFactura()&nbsp;del&nbsp;módulo&nbsp;de&nbsp;Contabilidad,&nbsp;siguiendo<br>
+el&nbsp;diagrama&nbsp;de&nbsp;componentes&nbsp;del&nbsp;sistema.<br>
+&nbsp;<br>
+Parámetros:<br>
+-----------<br>
+factura&nbsp;:&nbsp;dict<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Diccionario&nbsp;con&nbsp;los&nbsp;datos&nbsp;de&nbsp;la&nbsp;factura&nbsp;del&nbsp;proveedor.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Debe&nbsp;incluir:&nbsp;tipo,&nbsp;entidad&nbsp;(proveedor),&nbsp;productos,&nbsp;total.<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;si&nbsp;la&nbsp;factura&nbsp;fue&nbsp;enviada&nbsp;y&nbsp;registrada&nbsp;exitosamente.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;False&nbsp;si&nbsp;hubo&nbsp;algún&nbsp;error&nbsp;en&nbsp;el&nbsp;proceso.<br>
+&nbsp;<br>
+Ejemplo&nbsp;de&nbsp;uso:<br>
+---------------<br>
+&gt;&gt;&gt;&nbsp;factura_proveedor&nbsp;=&nbsp;{"tipo":&nbsp;"compra",&nbsp;"entidad":&nbsp;"Maderera",&nbsp;"total":&nbsp;800000}<br>
+&gt;&gt;&gt;&nbsp;exito&nbsp;=&nbsp;<a href="#-enviar_factura_a_contabilidad">enviar_factura_a_contabilidad</a>(factura_proveedor)<br>
+&gt;&gt;&gt;&nbsp;if&nbsp;exito:<br>
+&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("Factura&nbsp;registrada&nbsp;en&nbsp;contabilidad")</span></dd></dl>
+ <dl><dt><a name="-iniciar_servidor"><strong>iniciar_servidor</strong></a>()</dt><dd><span class="code">Inicia&nbsp;el&nbsp;servidor&nbsp;RPC&nbsp;que&nbsp;expone&nbsp;todas&nbsp;las&nbsp;funciones&nbsp;del&nbsp;artefacto&nbsp;Compras/Ventas.<br>
+&nbsp;<br>
+Este&nbsp;servidor&nbsp;queda&nbsp;escuchando&nbsp;permanentemente&nbsp;en&nbsp;un&nbsp;puerto&nbsp;específico,<br>
+esperando&nbsp;que&nbsp;otros&nbsp;módulos&nbsp;(Tienda,&nbsp;AtenciónProveedores)&nbsp;se&nbsp;conecten<br>
+y&nbsp;llamen&nbsp;a&nbsp;los&nbsp;métodos&nbsp;registrados&nbsp;de&nbsp;forma&nbsp;remota.<br>
+&nbsp;<br>
+Métodos&nbsp;expuestos&nbsp;via&nbsp;RPC:<br>
+--------------------------<br>
+-&nbsp;<a href="#-registrar_venta">registrar_venta</a>(cliente,&nbsp;productos,&nbsp;total)<br>
+&nbsp;&nbsp;Llamado&nbsp;por&nbsp;el&nbsp;módulo&nbsp;Tienda&nbsp;cuando&nbsp;un&nbsp;cliente&nbsp;compra.<br>
+&nbsp;&nbsp;<br>
+-&nbsp;<a href="#-registrar_compra">registrar_compra</a>(proveedor,&nbsp;productos,&nbsp;total)<br>
+&nbsp;&nbsp;Llamado&nbsp;por&nbsp;el&nbsp;módulo&nbsp;AtenciónProveedores&nbsp;cuando&nbsp;se&nbsp;compra&nbsp;a&nbsp;un&nbsp;proveedor.<br>
+&nbsp;&nbsp;<br>
+-&nbsp;<a href="#-obtener_ip_local">obtener_ip_local</a>()<br>
+&nbsp;&nbsp;Retorna&nbsp;la&nbsp;IP&nbsp;del&nbsp;servidor&nbsp;para&nbsp;facilitar&nbsp;conexiones.<br>
+&nbsp;&nbsp;<br>
+-&nbsp;<a href="#-consultar_ventas">consultar_ventas</a>()<br>
+&nbsp;&nbsp;Retorna&nbsp;el&nbsp;historial&nbsp;completo&nbsp;de&nbsp;ventas.<br>
+&nbsp;&nbsp;<br>
+-&nbsp;<a href="#-consultar_compras">consultar_compras</a>()<br>
+&nbsp;&nbsp;Retorna&nbsp;el&nbsp;historial&nbsp;completo&nbsp;de&nbsp;compras.<br>
+&nbsp;&nbsp;<br>
+-&nbsp;<a href="#-consultar_facturas">consultar_facturas</a>()<br>
+&nbsp;&nbsp;Retorna&nbsp;el&nbsp;historial&nbsp;completo&nbsp;de&nbsp;facturas&nbsp;recibidas&nbsp;de&nbsp;Contabilidad.<br>
+&nbsp;<br>
+Configuración:<br>
+--------------<br>
+-&nbsp;IP:&nbsp;Se&nbsp;obtiene&nbsp;automáticamente&nbsp;de&nbsp;la&nbsp;red&nbsp;local<br>
+-&nbsp;Puerto:&nbsp;Definido&nbsp;en&nbsp;la&nbsp;constante&nbsp;PUERTO_COMPRAS_VENTAS&nbsp;(9000)<br>
+-&nbsp;Protocolo:&nbsp;XML-RPC&nbsp;sobre&nbsp;HTTP<br>
+-&nbsp;Formato&nbsp;de&nbsp;datos:&nbsp;JSON<br>
+&nbsp;<br>
+Arquitectura&nbsp;de&nbsp;conexión:<br>
+-------------------------<br>
+[Módulo&nbsp;Tienda]&nbsp;----RPC----&gt;&nbsp;[Este&nbsp;Servidor]&nbsp;----RPC----&gt;&nbsp;[Contabilidad]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<br>
+[AtenciónProveedores]&nbsp;----RPC------┘<br>
+&nbsp;<br>
+Ejecución:<br>
+----------<br>
+Este&nbsp;servidor&nbsp;se&nbsp;ejecuta&nbsp;en&nbsp;un&nbsp;bucle&nbsp;infinito&nbsp;(serve_forever)&nbsp;y&nbsp;no&nbsp;termina<br>
+hasta&nbsp;que&nbsp;se&nbsp;detenga&nbsp;manualmente&nbsp;(Ctrl+C)&nbsp;o&nbsp;se&nbsp;mate&nbsp;el&nbsp;proceso.<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Esta&nbsp;función&nbsp;no&nbsp;retorna.&nbsp;Se&nbsp;ejecuta&nbsp;indefinidamente&nbsp;hasta&nbsp;ser&nbsp;detenida.<br>
+&nbsp;<br>
+Ejemplo&nbsp;de&nbsp;conexión&nbsp;desde&nbsp;otros&nbsp;módulos:<br>
+----------------------------------------<br>
+&gt;&gt;&gt;&nbsp;import&nbsp;xmlrpc.client<br>
+&gt;&gt;&gt;&nbsp;#&nbsp;Desde&nbsp;el&nbsp;módulo&nbsp;Tienda&nbsp;o&nbsp;AtenciónProveedores<br>
+&gt;&gt;&gt;&nbsp;servidor_compras_ventas&nbsp;=&nbsp;xmlrpc.client.ServerProxy('<a href="http://192.168.1.10:9000">http://192.168.1.10:9000</a>')<br>
+&gt;&gt;&gt;&nbsp;respuesta&nbsp;=&nbsp;servidor_compras_ventas.<a href="#-registrar_venta">registrar_venta</a>("Cliente",&nbsp;["producto"],&nbsp;100000)</span></dd></dl>
+ <dl><dt><a name="-obtener_ip_local"><strong>obtener_ip_local</strong></a>()</dt><dd><span class="code">Obtiene&nbsp;la&nbsp;dirección&nbsp;IP&nbsp;local&nbsp;del&nbsp;servidor&nbsp;donde&nbsp;corre&nbsp;este&nbsp;servicio.<br>
+&nbsp;<br>
+Esta&nbsp;función&nbsp;es&nbsp;útil&nbsp;para&nbsp;que&nbsp;otros&nbsp;módulos&nbsp;(Tienda,&nbsp;AtenciónProveedores)<br>
+sepan&nbsp;a&nbsp;qué&nbsp;dirección&nbsp;IP&nbsp;deben&nbsp;conectarse&nbsp;para&nbsp;invocar&nbsp;los&nbsp;servicios&nbsp;RPC.<br>
+&nbsp;<br>
+Proceso:<br>
+--------<br>
+1.&nbsp;Obtiene&nbsp;el&nbsp;nombre&nbsp;del&nbsp;host&nbsp;(hostname)&nbsp;de&nbsp;la&nbsp;máquina<br>
+2.&nbsp;Resuelve&nbsp;el&nbsp;hostname&nbsp;a&nbsp;una&nbsp;dirección&nbsp;IP&nbsp;local<br>
+3.&nbsp;Retorna&nbsp;la&nbsp;IP&nbsp;como&nbsp;string<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Dirección&nbsp;IP&nbsp;local&nbsp;en&nbsp;formato&nbsp;"xxx.xxx.xxx.xxx"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ejemplo:&nbsp;"192.168.1.10",&nbsp;"10.0.0.5"<br>
+&nbsp;<br>
+Ejemplo&nbsp;de&nbsp;uso:<br>
+---------------<br>
+&gt;&gt;&gt;&nbsp;ip&nbsp;=&nbsp;<a href="#-obtener_ip_local">obtener_ip_local</a>()<br>
+&gt;&gt;&gt;&nbsp;print(f"El&nbsp;servidor&nbsp;está&nbsp;corriendo&nbsp;en:&nbsp;{ip}")<br>
+El&nbsp;servidor&nbsp;está&nbsp;corriendo&nbsp;en:&nbsp;192.168.1.10<br>
+&nbsp;<br>
+Nota:<br>
+-----<br>
+Esta&nbsp;IP&nbsp;puede&nbsp;ser&nbsp;usada&nbsp;por&nbsp;otros&nbsp;módulos&nbsp;para&nbsp;conectarse:<br>
+&gt;&gt;&gt;&nbsp;compras_ventas&nbsp;=&nbsp;xmlrpc.client.ServerProxy(f'<a href="http://{ip}:9000">http://{ip}:9000</a>')</span></dd></dl>
+ <dl><dt><a name="-registrar_compra"><strong>registrar_compra</strong></a>(proveedor, productos, total)</dt><dd><span class="code">Registra&nbsp;una&nbsp;compra&nbsp;de&nbsp;inventario&nbsp;realizada&nbsp;a&nbsp;un&nbsp;proveedor.<br>
+&nbsp;<br>
+Este&nbsp;método&nbsp;es&nbsp;invocado&nbsp;remotamente&nbsp;por&nbsp;el&nbsp;módulo&nbsp;de&nbsp;AtenciónProveedores&nbsp;cuando<br>
+la&nbsp;empresa&nbsp;adquiere&nbsp;mercancía&nbsp;de&nbsp;un&nbsp;proveedor.&nbsp;El&nbsp;proceso&nbsp;incluye:<br>
+1.&nbsp;Registrar&nbsp;la&nbsp;compra&nbsp;en&nbsp;el&nbsp;sistema&nbsp;local<br>
+2.&nbsp;Recibir&nbsp;la&nbsp;factura&nbsp;del&nbsp;proveedor&nbsp;(como&nbsp;parámetro&nbsp;o&nbsp;generada)<br>
+3.&nbsp;Enviar&nbsp;la&nbsp;factura&nbsp;a&nbsp;Contabilidad&nbsp;para&nbsp;su&nbsp;registro&nbsp;contable<br>
+4.&nbsp;Retornar&nbsp;confirmación&nbsp;con&nbsp;todos&nbsp;los&nbsp;detalles<br>
+&nbsp;<br>
+Flujo&nbsp;de&nbsp;invocación:<br>
+--------------------<br>
+[Proveedor&nbsp;entrega&nbsp;mercancía]&nbsp;→&nbsp;[AtenciónProveedores&nbsp;llama&nbsp;registrar_compra&nbsp;via&nbsp;RPC]&nbsp;→<br>
+[Compras/Ventas&nbsp;registra]&nbsp;→&nbsp;[Recibe&nbsp;factura&nbsp;proveedor]&nbsp;→<br>
+[Envía&nbsp;factura&nbsp;a&nbsp;Contabilidad&nbsp;via&nbsp;RPC]&nbsp;→&nbsp;[Retorna&nbsp;confirmación&nbsp;a&nbsp;AtenciónProveedores]<br>
+&nbsp;<br>
+Parámetros:<br>
+-----------<br>
+proveedor&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Nombre&nbsp;o&nbsp;razón&nbsp;social&nbsp;del&nbsp;proveedor&nbsp;que&nbsp;vende&nbsp;a&nbsp;la&nbsp;empresa.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ejemplo:&nbsp;"Maderera&nbsp;El&nbsp;Roble",&nbsp;"Fábrica&nbsp;de&nbsp;Tapizados&nbsp;Ltda"<br>
+productos&nbsp;:&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Lista&nbsp;de&nbsp;nombres&nbsp;de&nbsp;productos/materiales&nbsp;adquiridos&nbsp;del&nbsp;proveedor.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ejemplo:&nbsp;["madera",&nbsp;"tornillos"],&nbsp;["tela",&nbsp;"espuma",&nbsp;"resortes"]<br>
+total&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Valor&nbsp;total&nbsp;de&nbsp;la&nbsp;compra&nbsp;en&nbsp;pesos&nbsp;colombianos.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ejemplo:&nbsp;800000.0,&nbsp;2350000.00<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+str&nbsp;(JSON)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;en&nbsp;formato&nbsp;JSON&nbsp;con&nbsp;la&nbsp;confirmación&nbsp;de&nbsp;la&nbsp;compra&nbsp;registrada.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Incluye:&nbsp;mensaje,&nbsp;id_compra,&nbsp;datos&nbsp;de&nbsp;la&nbsp;compra,&nbsp;y&nbsp;estado&nbsp;del&nbsp;envío&nbsp;a&nbsp;Contabilidad.<br>
+&nbsp;<br>
+Ejemplo&nbsp;de&nbsp;uso&nbsp;desde&nbsp;AtenciónProveedores&nbsp;(cliente&nbsp;RPC):<br>
+------------------------------------------------------<br>
+&gt;&gt;&gt;&nbsp;import&nbsp;xmlrpc.client<br>
+&gt;&gt;&gt;&nbsp;compras_ventas&nbsp;=&nbsp;xmlrpc.client.ServerProxy('<a href="http://192.168.1.10:9000">http://192.168.1.10:9000</a>')<br>
+&gt;&gt;&gt;&nbsp;respuesta&nbsp;=&nbsp;compras_ventas.<a href="#-registrar_compra">registrar_compra</a>("Maderera&nbsp;El&nbsp;Roble",&nbsp;["madera",&nbsp;"tornillos"],&nbsp;800000.0)<br>
+&gt;&gt;&gt;&nbsp;print(respuesta)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"mensaje":&nbsp;"Compra&nbsp;registrada&nbsp;exitosamente.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"id_compra":&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"compra":&nbsp;{...},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"enviada_a_contabilidad":&nbsp;true/false<br>
+}</span></dd></dl>
+ <dl><dt><a name="-registrar_venta"><strong>registrar_venta</strong></a>(cliente, productos, total)</dt><dd><span class="code">Registra&nbsp;una&nbsp;venta&nbsp;realizada&nbsp;por&nbsp;un&nbsp;cliente&nbsp;de&nbsp;la&nbsp;tienda.<br>
+&nbsp;<br>
+Este&nbsp;método&nbsp;es&nbsp;invocado&nbsp;remotamente&nbsp;por&nbsp;el&nbsp;módulo&nbsp;de&nbsp;Tienda&nbsp;cuando&nbsp;un&nbsp;cliente<br>
+realiza&nbsp;una&nbsp;compra.&nbsp;El&nbsp;proceso&nbsp;completo&nbsp;incluye:<br>
+1.&nbsp;Registrar&nbsp;la&nbsp;venta&nbsp;en&nbsp;el&nbsp;sistema&nbsp;local<br>
+2.&nbsp;Solicitar&nbsp;a&nbsp;Contabilidad&nbsp;que&nbsp;genere&nbsp;la&nbsp;factura&nbsp;oficial<br>
+3.&nbsp;Si&nbsp;se&nbsp;recibe&nbsp;la&nbsp;factura,&nbsp;almacenarla<br>
+4.&nbsp;Retornar&nbsp;confirmación&nbsp;con&nbsp;todos&nbsp;los&nbsp;detalles<br>
+&nbsp;<br>
+Flujo&nbsp;de&nbsp;invocación:<br>
+--------------------<br>
+[Cliente&nbsp;compra&nbsp;en&nbsp;Tienda]&nbsp;→&nbsp;[Tienda&nbsp;llama&nbsp;registrar_venta&nbsp;via&nbsp;RPC]&nbsp;→<br>
+[Compras/Ventas&nbsp;registra]&nbsp;→&nbsp;[Solicita&nbsp;factura&nbsp;a&nbsp;Contabilidad&nbsp;via&nbsp;RPC]&nbsp;→<br>
+[Contabilidad&nbsp;genera&nbsp;factura]&nbsp;→&nbsp;[Compras/Ventas&nbsp;recibe&nbsp;factura]&nbsp;→<br>
+[Retorna&nbsp;confirmación&nbsp;a&nbsp;Tienda]<br>
+&nbsp;<br>
+Parámetros:<br>
+-----------<br>
+cliente&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Nombre&nbsp;completo&nbsp;o&nbsp;identificador&nbsp;del&nbsp;cliente&nbsp;que&nbsp;realiza&nbsp;la&nbsp;compra.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ejemplo:&nbsp;"Juan&nbsp;Pérez",&nbsp;"María&nbsp;González"<br>
+productos&nbsp;:&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Lista&nbsp;de&nbsp;nombres&nbsp;de&nbsp;productos&nbsp;comprados&nbsp;por&nbsp;el&nbsp;cliente.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ejemplo:&nbsp;["silla",&nbsp;"mesa"],&nbsp;["sofá",&nbsp;"lámpara",&nbsp;"mesa&nbsp;de&nbsp;noche"]<br>
+total&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Valor&nbsp;total&nbsp;de&nbsp;la&nbsp;venta&nbsp;en&nbsp;pesos&nbsp;colombianos.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ejemplo:&nbsp;500000.0,&nbsp;1250000.50<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+str&nbsp;(JSON)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;en&nbsp;formato&nbsp;JSON&nbsp;con&nbsp;la&nbsp;confirmación&nbsp;de&nbsp;la&nbsp;venta&nbsp;registrada.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Incluye:&nbsp;mensaje,&nbsp;id_venta,&nbsp;datos&nbsp;de&nbsp;la&nbsp;venta,&nbsp;y&nbsp;factura&nbsp;(si&nbsp;fue&nbsp;generada).<br>
+&nbsp;<br>
+Ejemplo&nbsp;de&nbsp;uso&nbsp;desde&nbsp;Tienda&nbsp;(cliente&nbsp;RPC):<br>
+------------------------------------------<br>
+&gt;&gt;&gt;&nbsp;import&nbsp;xmlrpc.client<br>
+&gt;&gt;&gt;&nbsp;compras_ventas&nbsp;=&nbsp;xmlrpc.client.ServerProxy('<a href="http://192.168.1.10:9000">http://192.168.1.10:9000</a>')<br>
+&gt;&gt;&gt;&nbsp;respuesta&nbsp;=&nbsp;compras_ventas.<a href="#-registrar_venta">registrar_venta</a>("Juan&nbsp;Pérez",&nbsp;["silla",&nbsp;"mesa"],&nbsp;500000.0)<br>
+&gt;&gt;&gt;&nbsp;print(respuesta)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"mensaje":&nbsp;"Venta&nbsp;registrada&nbsp;exitosamente.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"id_venta":&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"venta":&nbsp;{...},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"factura":&nbsp;{...}&nbsp;&nbsp;//&nbsp;o&nbsp;null&nbsp;si&nbsp;Contabilidad&nbsp;no&nbsp;estaba&nbsp;disponible<br>
+}</span></dd></dl>
+ <dl><dt><a name="-solicitar_factura_a_contabilidad"><strong>solicitar_factura_a_contabilidad</strong></a>(tipo, entidad, total, productos)</dt><dd><span class="code">Solicita&nbsp;al&nbsp;módulo&nbsp;de&nbsp;Contabilidad&nbsp;que&nbsp;genere&nbsp;una&nbsp;factura&nbsp;oficial.<br>
+&nbsp;<br>
+Esta&nbsp;función&nbsp;se&nbsp;comunica&nbsp;via&nbsp;RPC&nbsp;con&nbsp;el&nbsp;servicio&nbsp;de&nbsp;Contabilidad&nbsp;para<br>
+solicitar&nbsp;la&nbsp;generación&nbsp;de&nbsp;una&nbsp;factura&nbsp;con&nbsp;los&nbsp;datos&nbsp;proporcionados.<br>
+&nbsp;<br>
+IMPORTANTE:&nbsp;Si&nbsp;Contabilidad&nbsp;no&nbsp;está&nbsp;disponible,&nbsp;retorna&nbsp;None.<br>
+Este&nbsp;módulo&nbsp;NO&nbsp;genera&nbsp;facturas,&nbsp;solo&nbsp;las&nbsp;solicita&nbsp;y&nbsp;recibe.<br>
+&nbsp;<br>
+Parámetros:<br>
+-----------<br>
+tipo&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Tipo&nbsp;de&nbsp;transacción:&nbsp;"venta"&nbsp;(cliente&nbsp;compra)&nbsp;o&nbsp;"compra"&nbsp;(empresa&nbsp;compra&nbsp;a&nbsp;proveedor).<br>
+entidad&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Nombre&nbsp;del&nbsp;cliente&nbsp;(si&nbsp;es&nbsp;venta)&nbsp;o&nbsp;proveedor&nbsp;(si&nbsp;es&nbsp;compra).<br>
+total&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Monto&nbsp;total&nbsp;de&nbsp;la&nbsp;transacción&nbsp;en&nbsp;pesos.<br>
+productos&nbsp;:&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Lista&nbsp;de&nbsp;nombres&nbsp;de&nbsp;productos&nbsp;involucrados&nbsp;en&nbsp;la&nbsp;transacción.<br>
+&nbsp;<br>
+Retorna:<br>
+--------<br>
+dict&nbsp;o&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Factura&nbsp;generada&nbsp;por&nbsp;Contabilidad&nbsp;en&nbsp;formato&nbsp;diccionario.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Retorna&nbsp;None&nbsp;si&nbsp;no&nbsp;se&nbsp;pudo&nbsp;contactar&nbsp;con&nbsp;Contabilidad&nbsp;o&nbsp;hubo&nbsp;error.<br>
+&nbsp;<br>
+Ejemplo&nbsp;de&nbsp;respuesta&nbsp;(cuando&nbsp;Contabilidad&nbsp;está&nbsp;disponible):<br>
+-----------------------------------------------------------<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"numero_factura":&nbsp;"FACT-2025-001",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"tipo":&nbsp;"venta",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"entidad":&nbsp;"Juan&nbsp;Pérez",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"productos":&nbsp;["silla",&nbsp;"mesa"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"total":&nbsp;500000.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"fecha":&nbsp;"2025-10-20",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"estado":&nbsp;"Aprobada"<br>
+}</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>IP_CONTABILIDAD</strong> = 'localhost'<br>
+<strong>PUERTO_COMPRAS_VENTAS</strong> = 9000<br>
+<strong>PUERTO_CONTABILIDAD</strong> = 8000<br>
+<strong>compras</strong> = {}<br>
+<strong>facturas</strong> = {}<br>
+<strong>ventas</strong> = {}</td></tr></table>
+</body></html>
