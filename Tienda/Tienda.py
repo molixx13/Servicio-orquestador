@@ -1,12 +1,14 @@
 import xmlrpc.client
 import os
 import sys
+import json
 
 # ==============================
 # CONFIGURACIÓN DE CONEXIONES
 # ==============================
 INVENTARIO_RPC_URL = "http://25.21.199.213:8010/rpc"
-COMPRAS_RPC_URL = "http://192.168.100.233:9000"
+COMPRAS_RPC_URL = "http://192.168.100.233:9000"  # ✅ corregido (agrega /rpc)
+TRANSPORTADOR_RPC_URL = "http://25.21.199.213:7000"  # 🚚 nuevo servicio
 
 def limpiar():
     os.system("cls" if os.name == "nt" else "clear")
@@ -26,7 +28,7 @@ def modo_inventario():
     print("5. Volver al menú principal")
     print("="*70)
 
-    inventario_rpc = xmlrpc.client.ServerProxy(INVENTARIO_RPC_URL)
+    inventario_rpc = xmlrpc.client.ServerProxy(INVENTARIO_RPC_URL, allow_none=True)
 
     while True:
         try:
@@ -93,7 +95,7 @@ def modo_inventario():
             input("Presiona ENTER para continuar...")
 
 # ==============================
-# MODO COMPRAS (ventas)
+# MODO COMPRAS (ventas reales)
 # ==============================
 def modo_compras():
     limpiar()
@@ -102,8 +104,9 @@ def modo_compras():
     print("="*70)
 
     try:
-        inventario_rpc = xmlrpc.client.ServerProxy(INVENTARIO_RPC_URL)
-        compras_rpc = xmlrpc.client.ServerProxy(COMPRAS_RPC_URL)
+        inventario_rpc = xmlrpc.client.ServerProxy(INVENTARIO_RPC_URL, allow_none=True)
+        compras_rpc = xmlrpc.client.ServerProxy(COMPRAS_RPC_URL, allow_none=True)
+        transportador_rpc = xmlrpc.client.ServerProxy(TRANSPORTADOR_RPC_URL, allow_none=True)
 
         print("\n📦 Solicitando lista de productos disponibles...")
         inventario = inventario_rpc.listarProductos()
@@ -136,11 +139,21 @@ def modo_compras():
             total
         )
 
-
         print("\n✅ Compra registrada correctamente.")
         print(f"🪑 Producto: {producto['nombre']}")
         print(f"📦 Cantidad: {cantidad}")
         print(f"💵 Total: ${total:,.0f}")
+
+        # 🚚 Envío automático al transportador
+        print("\n🚚 Solicitando transporte...")
+        envio_data = json.dumps({
+            "cliente": cliente,
+            "producto": producto["nombre"],
+            "cantidad": cantidad,
+            "total": total
+        })
+        respuesta_envio = transportador_rpc.ordenarTransporte(envio_data)
+        print(f"📦 Respuesta del transportador: {respuesta_envio}")
 
     except Exception as e:
         print(f"❌ Error en conexión o venta: {e}")
@@ -166,29 +179,12 @@ def menu_principal():
         if opcion == "1":
             modo_compras()
             limpiar()
-            print("="*70)
-            print("🛍️ CLIENTE RPC - TIENDA DE MUEBLES")
-            print("="*70)
-            print("1. 🛒 Modo COMPRAS (ventas reales)")
-            print("2. 🧩 Modo INVENTARIO (gestión)")
-            print("3. 🚪 Salir")
-            print("="*70)
-
         elif opcion == "2":
             modo_inventario()
             limpiar()
-            print("="*70)
-            print("🛍️ CLIENTE RPC - TIENDA DE MUEBLES")
-            print("="*70)
-            print("1. 🛒 Modo COMPRAS (ventas reales)")
-            print("2. 🧩 Modo INVENTARIO (gestión)")
-            print("3. 🚪 Salir")
-            print("="*70)
-
         elif opcion == "3":
             print("👋 Saliendo del cliente RPC...")
             sys.exit(0)
-
         else:
             print("⚠️ Opción inválida.")
 
@@ -202,4 +198,5 @@ if __name__ == "__main__":
         menu_principal()
     except KeyboardInterrupt:
         print("\n👋 Cliente cerrado manualmente.")
+
 

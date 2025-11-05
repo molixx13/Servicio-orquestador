@@ -1,0 +1,10 @@
+[
+    {
+        "cliente": "Molixx",
+        "producto": "Silla ultra gamer",
+        "cantidad": 2,
+        "total": 600000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 08:41:40"
+    }
+]

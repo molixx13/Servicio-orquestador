@@ -6,11 +6,38 @@
             "descripcion": "Mesa",
             "categoria": "Ikea",
             "precio": 230000.0,
-            "stock": 7,
+            "stock": 5,
+            "stock_minimo": 5
+        },
+        "2": {
+            "id": 2,
+            "nombre": "Silla ultra gamer",
+            "descripcion": "Ultra gamer",
+            "categoria": "silla",
+            "precio": 300000.0,
+            "stock": 8,
+            "stock_minimo": 5
+        },
+        "3": {
+            "id": 3,
+            "nombre": "Armario",
+            "descripcion": "Armario metalico",
+            "categoria": "Armario",
+            "precio": 120000.0,
+            "stock": 12,
+            "stock_minimo": 5
+        },
+        "4": {
+            "id": 4,
+            "nombre": "Juego de sala",
+            "descripcion": "Juego de sala sobrevalorado",
+            "categoria": "Juego de sala",
+            "precio": 400000.0,
+            "stock": 5,
             "stock_minimo": 5
         }
     },
     "requerimientos": {},
-    "next_product_id": 2,
+    "next_product_id": 5,
     "next_requerimiento_id": 1
 }
