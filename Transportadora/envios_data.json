@@ -6,5 +6,245 @@
         "total": 600000.0,
         "estado": "Despachado",
         "fecha_envio": "2025-11-05 08:41:40"
+    },
+    {
+        "cliente": "Molixx",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 10:07:57"
+    },
+    {
+        "cliente": "kevinx",
+        "producto": "Juego de sala",
+        "cantidad": 1,
+        "total": 400000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 10:29:57"
+    },
+    {
+        "cliente": "Moli",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 10:32:45"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 10:34:53"
+    },
+    {
+        "cliente": "Moli",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 10:35:08"
+    },
+    {
+        "cliente": "Molixx",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 13:53:21"
+    },
+    {
+        "cliente": "Molixx",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 13:56:48"
+    },
+    {
+        "cliente": "MOLIXXX",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 14:01:52"
+    },
+    {
+        "cliente": "MOlixx",
+        "producto": "Silla ultra gamer",
+        "cantidad": 1,
+        "total": 300000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 16:08:07"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 200000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 19:12:32"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Tu madre",
+        "cantidad": 1,
+        "total": 10000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 19:31:04"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Tu madre",
+        "cantidad": 1,
+        "total": 10000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 19:35:55"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Juego de sala",
+        "cantidad": 1,
+        "total": 400000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 19:51:32"
+    },
+    {
+        "cliente": "Elgreñas",
+        "producto": "Juego de sala",
+        "cantidad": 1,
+        "total": 400000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:03:36"
+    },
+    {
+        "cliente": "Kevinsito",
+        "producto": "Tu madre",
+        "cantidad": 1,
+        "total": 10000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:09:36"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Armario",
+        "cantidad": 1,
+        "total": 120000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:15:23"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Silla ultra gamer",
+        "cantidad": 1,
+        "total": 300000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:28:33"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Silla ultra gamer",
+        "cantidad": 1,
+        "total": 300000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:29:02"
+    },
+    {
+        "cliente": "Molixx",
+        "producto": "Armario",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:31:36"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Tu madre",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:38:17"
+    },
+    {
+        "cliente": "kevin",
+        "producto": "Tu madre",
+        "cantidad": 9,
+        "total": 900000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:38:59"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Armario",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:42:03"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Armario",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 20:54:05"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Tu madre",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 21:04:30"
+    },
+    {
+        "cliente": "Molixxx",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 21:12:57"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 21:29:22"
+    },
+    {
+        "cliente": "MoliXXX",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 21:48:06"
+    },
+    {
+        "cliente": "KevinXXX",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-05 22:04:07"
+    },
+    {
+        "cliente": "Kevin",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-06 07:46:12"
+    },
+    {
+        "cliente": "Molixx",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-06 07:51:05"
     }
 ]

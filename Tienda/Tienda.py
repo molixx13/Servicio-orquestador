@@ -2,12 +2,12 @@ import xmlrpc.client
 import os
 import sys
 import json
-
+import http.client
 # ==============================
 # CONFIGURACIÓN DE CONEXIONES
 # ==============================
 INVENTARIO_RPC_URL = "http://25.21.199.213:8010/rpc"
-COMPRAS_RPC_URL = "http://192.168.100.233:9000"  # ✅ corregido (agrega /rpc)
+COMPRAS_RPC_URL = "http://192.168.100.233:9000/rpc"
 TRANSPORTADOR_RPC_URL = "http://25.21.199.213:7000"  # 🚚 nuevo servicio
 
 def limpiar():

@@ -5,8 +5,8 @@
             "nombre": "Mesa Ikea",
             "descripcion": "Mesa",
             "categoria": "Ikea",
-            "precio": 230000.0,
-            "stock": 5,
+            "precio": 100000.0,
+            "stock": 14,
             "stock_minimo": 5
         },
         "2": {
@@ -14,8 +14,8 @@
             "nombre": "Silla ultra gamer",
             "descripcion": "Ultra gamer",
             "categoria": "silla",
-            "precio": 300000.0,
-            "stock": 8,
+            "precio": 100000.0,
+            "stock": 25,
             "stock_minimo": 5
         },
         "3": {
@@ -23,8 +23,8 @@
             "nombre": "Armario",
             "descripcion": "Armario metalico",
             "categoria": "Armario",
-            "precio": 120000.0,
-            "stock": 12,
+            "precio": 100000.0,
+            "stock": 25,
             "stock_minimo": 5
         },
         "4": {
@@ -32,12 +32,21 @@
             "nombre": "Juego de sala",
             "descripcion": "Juego de sala sobrevalorado",
             "categoria": "Juego de sala",
-            "precio": 400000.0,
-            "stock": 5,
+            "precio": 100000.0,
+            "stock": 14,
+            "stock_minimo": 5
+        },
+        "5": {
+            "id": 5,
+            "nombre": "Tu madre",
+            "descripcion": "Tu madre",
+            "categoria": "madre",
+            "precio": 100000.0,
+            "stock": 24,
             "stock_minimo": 5
         }
     },
     "requerimientos": {},
-    "next_product_id": 5,
+    "next_product_id": 6,
     "next_requerimiento_id": 1
 }

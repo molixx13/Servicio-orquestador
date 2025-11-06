@@ -10,6 +10,12 @@ Guarda los datos en disco en el mismo directorio del módulo (inventario_data.js
 import json
 import os
 
+import xmlrpc.client
+from xmlrpc.client import Transport
+
+ATENCION_PROVEEDORES_RPC_URL = "http://25.21.199.213:7005"
+
+
 # Archivo de persistencia situado en la misma carpeta que este script
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 INVENTARIO_FILE = os.path.join(BASE_DIR, "inventario_data.json")
@@ -104,11 +110,9 @@ class InventarioService:
             return {"success": False, "message": f"Error en cargarProductos: {str(e)}"}
 
     def actualizarInventario(self, producto_id=None, stock=None, precio=None, data=None):
-        """Actualiza el inventario tras operaciones desde Contabilidad o Cliente RPC."""
+        """Actualiza el inventario tras operaciones desde Contabilidad, Tienda o Compras."""
         try:
-            # -------------------------------------------------------
-            # 🔹 Normalizar los datos recibidos
-            # -------------------------------------------------------
+            # Normalización de entrada
             if isinstance(producto_id, str):
                 try:
                     data = json.loads(producto_id)
@@ -121,9 +125,6 @@ class InventarioService:
             elif data is None:
                 data = {"producto_id": producto_id, "stock": stock, "precio": precio}
 
-            # -------------------------------------------------------
-            # 🔹 Mostrar lo recibido
-            # -------------------------------------------------------
             print("=" * 70)
             print("📦 SOLICITUD DE ACTUALIZACIÓN DE INVENTARIO")
             print("=" * 70)
@@ -131,10 +132,8 @@ class InventarioService:
 
             tipo = data.get("tipo_operacion", "").upper()
 
-            # -------------------------------------------------------
-            # 🔹 Caso 1: actualización normal por ID
-            # -------------------------------------------------------
-            if "producto_id" in data:
+            # 🔹 Caso: actualización directa
+            if "producto_id" in data and tipo not in ["VENTA", "COMPRA"]:
                 producto_id = int(data["producto_id"])
                 if producto_id not in self.productos:
                     return {"status": "error", "detalle": f"Producto {producto_id} no encontrado"}
@@ -147,9 +146,7 @@ class InventarioService:
                 print(f"[Inventario] ✅ Producto {producto['nombre']} actualizado directamente.")
                 return {"status": "ok", "message": "Inventario actualizado correctamente"}
 
-            # -------------------------------------------------------
-            # 🔹 Caso 2: operación tipo VENTA o COMPRA
-            # -------------------------------------------------------
+            # 🔹 Caso: operación tipo VENTA o COMPRA
             elif tipo in ["VENTA", "COMPRA"]:
                 productos = data.get("productos", [])
                 for p in productos:
@@ -157,11 +154,9 @@ class InventarioService:
                     cantidad = int(p.get("cantidad", 1))
                     precio_unit = float(p.get("precio_unit", 0))
 
-                    # 🧹 Limpiar el nombre ("Mesa Ikea x1" → "Mesa Ikea")
                     if " x" in nombre:
                         nombre = nombre.split(" x")[0].strip()
 
-                    # Buscar producto por nombre (insensible a mayúsculas)
                     encontrado = None
                     for pid, prod in self.productos.items():
                         if prod["nombre"].strip().lower() == nombre.lower():
@@ -179,6 +174,11 @@ class InventarioService:
                         print(f"🛒 Venta: '{nombre}' - stock {producto['stock']} → {nuevo_stock}")
                         producto["stock"] = nuevo_stock
 
+                        # 🚨 Si se detecta bajo stock, generar requerimiento
+                        if nuevo_stock <= producto["stock_minimo"]:
+                            print(f"⚠️ Stock bajo detectado para '{nombre}' → disparando requerimiento automático.")
+                            self.cargarRequerimientosProductos()
+
                     elif tipo == "COMPRA":
                         nuevo_stock = producto["stock"] + cantidad
                         print(f"📦 Compra: '{nombre}' - stock {producto['stock']} → {nuevo_stock}")
@@ -186,10 +186,9 @@ class InventarioService:
                         if precio_unit > 0:
                             producto["precio"] = precio_unit
 
-                # Guardar cambios
-                    self.guardar_datos()
-                    print("✅ Inventario actualizado correctamente tras operación contable.")
-                    return {"status": "ok", "message": f"Inventario actualizado ({tipo})"}
+                self.guardar_datos()
+                print("✅ Inventario actualizado correctamente tras operación contable.")
+                return {"status": "ok", "message": f"Inventario actualizado ({tipo})"}
 
             else:
                 return {"status": "error", "detalle": "Tipo de operación no reconocido o datos incompletos"}
@@ -198,31 +197,6 @@ class InventarioService:
             print(f"[Inventario ERROR] {e}")
             return {"status": "error", "detalle": str(e)}
 
-    def cargarRequerimientosProductos(self, producto_id, cantidad_requerida, prioridad="MEDIA"):
-        """CONECTOR 3 - API Proveedores: Crear un requerimiento"""
-        try:
-            producto_id = int(producto_id)
-            if producto_id not in self.productos:
-                return {"success": False, "message": "Producto no encontrado"}
-
-            nuevo_req = {
-                "id": self.next_requerimiento_id,
-                "producto_id": producto_id,
-                "cantidad_requerida": int(cantidad_requerida),
-                "prioridad": prioridad,
-                "estado": "PENDIENTE"
-            }
-
-            self.requerimientos[self.next_requerimiento_id] = nuevo_req
-            self.next_requerimiento_id += 1
-            self.guardar_datos()
-
-            return {"success": True, "message": "Requerimiento creado", "data": nuevo_req}
-
-        except Exception as e:
-            return {"success": False, "message": f"Error en cargarRequerimientosProductos: {str(e)}"}
-
-    # ===========================================================
     # Métodos consultivos
     # ===========================================================
     def listarProductos(self):
@@ -287,3 +261,49 @@ class InventarioService:
             "productos": len(self.productos),
             "requerimientos": len(self.requerimientos)
         }
+
+    def cargarRequerimientosProductos(self):
+        """Detecta productos con bajo stock y genera un pedido al módulo AtenciónProveedores."""
+        try:
+            productos_bajo_stock = [
+                {"nombre": p["nombre"], "cantidad": (p["stock_minimo"] * 2)}
+                for p in self.productos.values() if p["stock"] <= p["stock_minimo"]
+            ]
+
+            if not productos_bajo_stock:
+                print("📦 No hay productos con bajo stock. No se genera requerimiento.")
+                return {"status": "ok", "mensaje": "Inventario suficiente."}
+
+            requerimiento = {
+                "origen": "Inventario",
+                "productos": productos_bajo_stock,
+                "motivo": "Reabastecimiento automático por bajo stock"
+            }
+
+            print("\n📡 Enviando requerimiento a AtenciónProveedores...")
+            print(json.dumps(requerimiento, indent=4, ensure_ascii=False))
+
+            class CustomTransport(Transport):
+                """Transporte XML-RPC personalizado que fuerza la ruta /rpc en lugar de /RPC2."""
+                def request(self, host, handler, request_body, verbose=False):
+                    # Forzar siempre el handler /rpc
+                    handler = "/rpc"
+                    return super().request(host, handler, request_body, verbose)
+
+
+
+            proveedor_rpc = xmlrpc.client.ServerProxy(
+                ATENCION_PROVEEDORES_RPC_URL,
+                allow_none=True,
+                transport=CustomTransport()
+            )
+
+
+            respuesta = proveedor_rpc.procesarRequerimiento(json.dumps(requerimiento))
+
+            print(f"📥 Respuesta de AtenciónProveedores: {respuesta}")
+            return {"status": "ok", "mensaje": "Requerimiento enviado correctamente."}
+
+        except Exception as e:
+            print(f"❌ Error al enviar requerimiento: {e}")
+            return {"status": "error", "detalle": str(e)}

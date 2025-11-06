@@ -1,0 +1,314 @@
+[
+    {
+        "id": "COMP-20251105142324",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 14:23:24"
+    },
+    {
+        "id": "COMP-20251105142622",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 14:26:22"
+    },
+    {
+        "id": "COMP-20251105144810",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 14:48:10"
+    },
+    {
+        "id": "COMP-20251105150648",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 15:06:48"
+    },
+    {
+        "id": "COMP-20251105155018",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 15:50:18"
+    },
+    {
+        "id": "COMP-20251105161711",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 16:17:11"
+    },
+    {
+        "id": "COMP-20251105165359",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 16:53:59"
+    },
+    {
+        "id": "COMP-20251105173417",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 17:34:17"
+    },
+    {
+        "id": "COMP-20251105191232",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 19:12:32"
+    },
+    {
+        "id": "COMP-20251105193555",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 19:35:55"
+    },
+    {
+        "id": "COMP-20251105195132",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Juego de sala",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 19:51:32"
+    },
+    {
+        "id": "COMP-20251105200336",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Juego de sala",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:03:36"
+    },
+    {
+        "id": "COMP-20251105200936",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Juego de sala",
+                "cantidad": 10
+            },
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:09:36"
+    },
+    {
+        "id": "COMP-20251105201523",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Armario",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:15:23"
+    },
+    {
+        "id": "COMP-20251105202852",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Silla ultra gamer",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:28:52"
+    },
+    {
+        "id": "COMP-20251105203126",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Armario",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:31:26"
+    },
+    {
+        "id": "COMP-20251105203914",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Armario",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:39:14"
+    },
+    {
+        "id": "COMP-20251105204148",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Armario",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:41:48"
+    },
+    {
+        "id": "COMP-20251105205340",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Armario",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 20:53:40"
+    },
+    {
+        "id": "COMP-20251105210405",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Tu madre",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 21:04:05"
+    },
+    {
+        "id": "COMP-20251105212857",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 21:28:57"
+    },
+    {
+        "id": "COMP-20251105214706",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 21:47:06"
+    },
+    {
+        "id": "COMP-20251105220407",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-05 22:04:07"
+    },
+    {
+        "id": "COMP-20251106075105",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-06 07:51:05"
+    }
+]
