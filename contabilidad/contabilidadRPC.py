@@ -1,11 +1,37 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Módulo: contabilidadRPC
+Módulo de Contabilidad - Sistema Orquestado de Tienda de Muebles
+==================================================================
+
+Este módulo implementa el servicio de contabilidad con procesamiento asíncrono
+para gestionar facturas de ventas y compras, y actualizar el inventario.
+
+Responsabilidades:
+    - Generar facturas oficiales para todas las ventas
+    - Registrar y contabilizar compras a proveedores
+    - Actualizar el inventario tras cada transacción (RESPONSABILIDAD ÚNICA)
+    - Mantener numeración consecutiva de facturas
+    - Crear asientos contables
+
+Arquitectura:
+    - Servidor XML-RPC con procesamiento asíncrono
+    - Thread worker para actualizar inventario en segundo plano
+    - Cola (Queue) para encolar actualizaciones de inventario
+    - Respuestas inmediatas (<2 segundos) sin bloqueos
+
+Mejoras vs versión anterior:
+    - ✅ Procesamiento asíncrono elimina timeouts
+    - ✅ Respuestas instantáneas al cliente
+    - ✅ Inventario se actualiza en segundo plano
+    - ✅ Sin duplicación de actualizaciones
+
+Dependencias:
+    - Inventario (25.21.199.213:8010) - Actualización de stock
+
 Autor: Molixx13
-Descripción:
-------------
-Servicio XML-RPC del módulo de Contabilidad con procesamiento asíncrono.
-Se encarga de generar facturas oficiales para ventas y registrar compras de proveedores.
-Actualiza el inventario en segundo plano para responder rápidamente.
+Fecha: 2025-11-05
+Versión: 2.0 (con procesamiento asíncrono)
 """
 
 from xmlrpc.server import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
@@ -16,25 +42,45 @@ from datetime import datetime
 import threading
 from queue import Queue
 import traceback
+from typing import Dict, Any, Tuple, Optional
 
-# ===========================================================
-# CONFIGURACIÓN DE RED Y CONEXIONES
-# ===========================================================
-hostIP = str(socket.gethostbyname(socket.gethostname()))
-port = 10010
+# ============================================================================
+# CONFIGURACIÓN GLOBAL
+# ============================================================================
 
-# Dirección del servicio de Inventario (ajustar según red)
-INVENTARIO_IP = "25.21.199.213"
-INVENTARIO_PORT = 8010
+hostIP: str = str(socket.gethostbyname(socket.gethostname()))
+"""Dirección IP local de esta máquina."""
 
-# ===========================================================
-# FUNCIONES AUXILIARES
-# ===========================================================
+port: int = 10010
+"""Puerto de escucha del servidor de Contabilidad."""
+
+# Configuración del servicio de Inventario
+INVENTARIO_IP: str = "25.21.199.213"
+INVENTARIO_PORT: int = 8010
+
+# ============================================================================
+# CLASES AUXILIARES
+# ============================================================================
+
 class RequestHandler(SimpleXMLRPCRequestHandler):
+    """
+    Manejador de peticiones HTTP para el servidor XML-RPC.
+    
+    Attributes:
+        rpc_paths (tuple): Rutas aceptadas (/rpc y /RPC2 para compatibilidad).
+    """
     rpc_paths = ('/rpc', '/RPC2')
 
-def banner_inicio():
-    """Imprime el banner de inicio del servidor en formato estructurado."""
+# ============================================================================
+# FUNCIONES DE UTILIDAD
+# ============================================================================
+
+def banner_inicio() -> None:
+    """
+    Imprime el banner informativo del servidor al iniciar.
+    
+    Muestra configuración de red, métodos disponibles y mejoras implementadas.
+    """
     print("=" * 70)
     print("🚀 SERVIDOR CONTABILIDAD INICIADO (MODO ASÍNCRONO)")
     print("=" * 70)
@@ -61,36 +107,78 @@ def banner_inicio():
     print("=" * 70)
     print("\n⏳ Esperando llamadas RPC...\n")
 
-def log_linea():
-    """Imprime una línea separadora uniforme."""
+
+def log_linea() -> None:
+    """Imprime una línea separadora uniforme para logs."""
     print("=" * 70)
 
-def log_evento(mensaje):
-    """Imprime un evento con marca de tiempo."""
+
+def log_evento(mensaje: str) -> None:
+    """
+    Registra un evento con timestamp.
+    
+    Args:
+        mensaje (str): Mensaje a registrar.
+        
+    Example:
+        >>> log_evento("Factura generada")
+        [2025-11-05 14:30:00] Factura generada
+    """
     hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{hora}] {mensaje}")
 
-# ===========================================================
-# CLASE PRINCIPAL DEL SERVICIO (CON PROCESAMIENTO ASÍNCRONO)
-# ===========================================================
+# ============================================================================
+# CLASE PRINCIPAL DEL SERVICIO
+# ============================================================================
+
 class ServidorContabilidad:
     """
-    Clase que implementa los métodos remotos de Contabilidad
-    con procesamiento asíncrono de actualizaciones de inventario.
+    Servicio de Contabilidad con procesamiento asíncrono de inventario.
+    
+    Esta clase implementa los métodos RPC para generar facturas de ventas
+    y registrar compras. Utiliza un hilo worker para actualizar el inventario
+    en segundo plano, permitiendo respuestas instantáneas al cliente.
+    
+    Attributes:
+        name (str): Nombre del servicio.
+        invIP (str): IP del servicio de Inventario.
+        invPort (int): Puerto del servicio de Inventario.
+        inventarioRPC (ServerProxy): Cliente RPC hacia Inventario.
+        queue_inventario (Queue): Cola para actualizaciones asíncronas.
+        worker_thread (Thread): Hilo que procesa la cola de inventario.
+        
+    Example:
+        >>> servidor = ServidorContabilidad()
+        >>> # El servidor automáticamente inicia el worker thread
+        
+    Note:
+        El worker thread se ejecuta como daemon, por lo que se detendrá
+        automáticamente cuando el programa principal termine.
     """
-
+    
     def __init__(self):
+        """
+        Inicializa el servicio de Contabilidad y su worker thread.
+        
+        Crea:
+            - Conexión RPC hacia Inventario
+            - Cola para procesamiento asíncrono
+            - Hilo worker en modo daemon
+        """
         self.name = "Contabilidad"
         self.invIP = INVENTARIO_IP
         self.invPort = INVENTARIO_PORT
         
         # Cliente RPC hacia Inventario
         self.inventarioRPC = xmlrpc.client.ServerProxy(
-            f"http://{self.invIP}:{self.invPort}/rpc", allow_none=True
+            f"http://{self.invIP}:{self.invPort}/rpc", 
+            allow_none=True
         )
         
-        # ⬇️ NUEVO: Cola para procesamiento asíncrono
-        self.queue_inventario = Queue()
+        # Cola para procesamiento asíncrono
+        self.queue_inventario: Queue[Optional[Tuple[str, Dict, str]]] = Queue()
+        
+        # Iniciar worker thread
         self.worker_thread = threading.Thread(
             target=self._procesar_cola_inventario, 
             daemon=True,
@@ -99,31 +187,54 @@ class ServidorContabilidad:
         self.worker_thread.start()
         print("✅ Hilo de procesamiento asíncrono iniciado")
 
-    def _procesar_cola_inventario(self):
+    def _procesar_cola_inventario(self) -> None:
         """
-        Hilo worker que procesa actualizaciones de inventario en segundo plano.
-        Esto evita bloquear las respuestas RPC mientras se actualiza el inventario.
+        Worker thread que procesa actualizaciones de inventario en segundo plano.
+        
+        Este método corre en un loop infinito, esperando tareas en la cola.
+        Cada tarea contiene los datos necesarios para actualizar el inventario.
+        
+        Flujo:
+            1. Espera tareas en queue_inventario (bloqueante)
+            2. Extrae tipo, datos e identificador
+            3. Llama a inventarioRPC.actualizarInventario()
+            4. Registra el resultado (éxito o error)
+            5. Marca la tarea como completada
+            
+        Note:
+            - Se detiene al recibir None en la cola
+            - Captura todas las excepciones para evitar que el thread muera
+            - Los errores se registran pero no detienen el procesamiento
+            
+        Example:
+            >>> # Este método se ejecuta automáticamente
+            >>> # Las tareas se encolan así:
+            >>> self.queue_inventario.put(("VENTA", datos, "FACT-123"))
         """
         while True:
             try:
                 tarea = self.queue_inventario.get()
-                if tarea is None:  # Señal de parada
+                
+                # Señal de parada
+                if tarea is None:
                     break
                 
                 tipo, datos, identificador = tarea
+                
                 print(f"\n🔄 [Worker] Procesando actualización de inventario ({tipo})...")
                 print(f"   Identificador: {identificador}")
                 
                 # Realizar llamada RPC al inventario
                 respuesta = self.inventarioRPC.actualizarInventario(json.dumps(datos))
                 
-                # Parsear respuesta
+                # Parsear respuesta (puede venir como string o dict)
                 if isinstance(respuesta, str):
                     try:
                         respuesta = json.loads(respuesta)
                     except:
                         pass
                 
+                # Verificar resultado
                 if isinstance(respuesta, dict) and respuesta.get("status") == "ok":
                     print(f"✅ [Worker] Inventario actualizado correctamente ({tipo})")
                 else:
@@ -135,13 +246,70 @@ class ServidorContabilidad:
             finally:
                 self.queue_inventario.task_done()
 
-    # -------------------------------------------------------
-    # MÉTODO: GENERAR FACTURA DE VENTA (ASÍNCRONO)
-    # -------------------------------------------------------
-    def generarFactura(self, json_data):
+    def generarFactura(self, json_data: str) -> str:
         """
-        Recibe la venta desde Compras/Ventas y genera factura.
-        Actualiza inventario en segundo plano (no bloquea la respuesta).
+        Genera una factura oficial para una venta y actualiza inventario asíncronamente.
+        
+        Este método es invocado por el módulo Compras/Ventas cuando se registra
+        una venta. La actualización del inventario se realiza en segundo plano
+        para proporcionar una respuesta inmediata.
+        
+        Args:
+            json_data (str): Datos de la venta en formato JSON con estructura:
+                {
+                    "tipo_operacion": "VENTA",
+                    "nombre_cliente": str,
+                    "productos": [
+                        {
+                            "nombre": str,
+                            "cantidad": int,
+                            "precio_unit": float
+                        }
+                    ],
+                    "total": float
+                }
+                
+        Returns:
+            str: Factura en formato JSON string con estructura:
+                {
+                    "factura_id": str,
+                    "tipo": "venta",
+                    "cliente": str,
+                    "productos": List[Dict],
+                    "total": float,
+                    "estado": "Aprobada",
+                    "fecha": str
+                }
+                
+        Raises:
+            No lanza excepciones. Errores retornan JSON con status="error".
+            
+        Example:
+            >>> datos = {
+            ...     "tipo_operacion": "VENTA",
+            ...     "nombre_cliente": "Juan Pérez",
+            ...     "productos": [{"nombre": "Mesa", "cantidad": 1, "precio_unit": 100000}],
+            ...     "total": 100000
+            ... }
+            >>> factura_json = servidor.generarFactura(json.dumps(datos))
+            >>> factura = json.loads(factura_json)
+            >>> print(factura["factura_id"])  # FACT-20251105143000
+            
+        Flujo:
+            1. Parsea datos de entrada
+            2. Genera ID único de factura (timestamp)
+            3. Normaliza productos para envío a Inventario
+            4. **Encola** actualización de inventario (NO espera)
+            5. Genera y retorna factura INMEDIATAMENTE
+            6. Worker thread actualiza inventario en paralelo
+            
+        Important:
+            - La respuesta es inmediata (<1 segundo)
+            - El inventario se actualiza en segundo plano
+            - La factura se genera SIEMPRE, incluso si Inventario falla
+            
+        Note:
+            Formato de ID: FACT-YYYYMMDDHHMMSS (ej: FACT-20251105143000)
         """
         try:
             data = json.loads(json_data)
@@ -150,7 +318,7 @@ class ServidorContabilidad:
             productos = data.get("productos", [])
             factura_id = f"FACT-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-            # Log visual de solicitud
+            # Log visual
             print("=" * 70)
             print("📄 NUEVA SOLICITUD DE FACTURA")
             print("=" * 70)
@@ -158,7 +326,7 @@ class ServidorContabilidad:
             print(f"💵 Total: ${total:,.2f}")
             print(f"📦 Productos: {len(productos)}")
 
-            # 🔹 Normalizar formato de datos para Inventario
+            # Normalizar productos para Inventario
             envio_data = {
                 "tipo_operacion": "VENTA",
                 "nombre_cliente": cliente,
@@ -169,6 +337,7 @@ class ServidorContabilidad:
             productos_raw = data.get("productos", [])
             for p in productos_raw:
                 if isinstance(p, dict):
+                    # Extraer nombre de diferentes posibles keys
                     nombre = (
                         p.get("nombre")
                         or p.get("producto")
@@ -181,6 +350,7 @@ class ServidorContabilidad:
                         "precio_unit": float(p.get("precio_unit", p.get("precio", 0)))
                     })
                 elif isinstance(p, str):
+                    # Parsear string tipo "Mesa x2"
                     partes = p.split(" x")
                     nombre = partes[0].strip()
                     cantidad = 1
@@ -192,12 +362,12 @@ class ServidorContabilidad:
                         "precio_unit": 0
                     })
 
-            # ⬇️ CAMBIO CRÍTICO: Encolar para procesamiento asíncrono
+            # CLAVE: Encolar actualización para procesamiento asíncrono
             self.queue_inventario.put(("VENTA", envio_data, factura_id))
             print(f"\n📤 Actualización de inventario encolada (procesamiento asíncrono)")
             print(f"   Inventario se actualizará en segundo plano")
 
-            # ⬇️ Generar y devolver factura INMEDIATAMENTE
+            # Generar factura INMEDIATAMENTE (sin esperar inventario)
             factura = {
                 "factura_id": factura_id,
                 "tipo": "venta",
@@ -222,13 +392,69 @@ class ServidorContabilidad:
             print("=" * 70)
             return json.dumps({"status": "error", "detalle": str(e)})
 
-    # -------------------------------------------------------
-    # MÉTODO: RECIBIR FACTURA DE PROVEEDOR (ASÍNCRONO)
-    # -------------------------------------------------------
-    def recibirFactura(self, json_data):
+    def recibirFactura(self, json_data: str) -> str:
         """
-        Recibe la compra enviada por Compras/Ventas, la registra.
-        Actualiza inventario en segundo plano (no bloquea la respuesta).
+        Registra una factura de compra a proveedor y actualiza inventario asíncronamente.
+        
+        Este método es invocado por el módulo Compras/Ventas cuando se registra
+        una compra a un proveedor. Crea el asiento contable y actualiza el
+        inventario en segundo plano.
+        
+        Args:
+            json_data (str): Datos de la compra en formato JSON con estructura:
+                {
+                    "tipo": "COMPRA",
+                    "proveedor": str,
+                    "productos": List[str],  # Lista de nombres
+                    "total": float,
+                    "compra_id": int,
+                    "fecha": str
+                }
+                
+        Returns:
+            str: Respuesta en formato JSON string con estructura:
+                {
+                    "status": "ok",
+                    "mensaje": str,
+                    "asiento": {
+                        "tipo": "COMPRA",
+                        "compra_id": int,
+                        "proveedor": str,
+                        "total": float,
+                        "fecha": str
+                    }
+                }
+                
+        Example:
+            >>> datos = {
+            ...     "tipo": "COMPRA",
+            ...     "proveedor": "MueblesXYZ",
+            ...     "productos": ["Mesa", "Silla"],
+            ...     "total": 500000,
+            ...     "compra_id": 1,
+            ...     "fecha": "2025-11-05 14:30:00"
+            ... }
+            >>> respuesta_json = servidor.recibirFactura(json.dumps(datos))
+            >>> respuesta = json.loads(respuesta_json)
+            >>> print(respuesta["status"])  # "ok"
+            
+        Flujo:
+            1. Parsea datos de la compra
+            2. Crea asiento contable
+            3. Normaliza productos para Inventario
+            4. **Encola** actualización de inventario
+            5. Retorna confirmación INMEDIATAMENTE
+            6. Worker actualiza inventario en paralelo
+            
+        Important:
+            - Este es el ÚNICO método que debe invocar actualizaciones de
+              inventario para compras (responsabilidad única)
+            - Respuesta inmediata (<1 segundo)
+            - Asiento contable se crea siempre
+            
+        Note:
+            - Cada producto se normaliza con cantidad=10 y precio=100000
+            - Estos valores son configurables según necesidad del negocio
         """
         try:
             data = json.loads(json_data)
@@ -256,22 +482,26 @@ class ServidorContabilidad:
 
             print(f"📝 Asiento contable creado: COMP-{compra_id}")
 
-            # ⬇️ Preparar datos para inventario
+            # Preparar datos para inventario
             envio_inv = {
                 "tipo_operacion": "COMPRA",
                 "nombre_proveedor": proveedor,
                 "productos": [
-                    {"nombre": str(p), "cantidad": 10, "precio_unit": 100000}
+                    {
+                        "nombre": str(p), 
+                        "cantidad": 10,      # Cantidad por defecto
+                        "precio_unit": 100000  # Precio por defecto
+                    }
                     for p in productos
                 ],
                 "total": total
             }
 
-            # ⬇️ CAMBIO CRÍTICO: Encolar para procesamiento asíncrono
+            # CLAVE: Encolar actualización asíncrona
             self.queue_inventario.put(("COMPRA", envio_inv, f"COMP-{compra_id}"))
             print(f"\n📤 Actualización de inventario encolada (procesamiento asíncrono)")
 
-            # ⬇️ Responder INMEDIATAMENTE
+            # Responder INMEDIATAMENTE
             respuesta = {
                 "status": "ok",
                 "mensaje": f"Compra {compra_id} registrada correctamente.",
@@ -291,20 +521,32 @@ class ServidorContabilidad:
             log_linea()
             return json.dumps({"status": "error", "detalle": str(e)})
 
-# ===========================================================
+# ============================================================================
 # SERVIDOR PRINCIPAL
-# ===========================================================
+# ============================================================================
+
 if __name__ == "__main__":
+    """
+    Punto de entrada del servidor de Contabilidad.
+    
+    Inicializa:
+        - Servidor XML-RPC en todas las interfaces
+        - Instancia de ServidorContabilidad (con worker thread)
+        - Funciones de introspección (listMethods, methodHelp)
+        
+    El servidor corre indefinidamente hasta recibir KeyboardInterrupt.
+    """
     server = SimpleXMLRPCServer(
         (hostIP, port),
         requestHandler=RequestHandler,
         allow_none=True,
         logRequests=True
     )
+    
     contabilidad = ServidorContabilidad()
     server.register_instance(contabilidad)
 
-    # 👇 Habilita system.listMethods, system.methodHelp, etc.
+    # Habilitar introspección RPC
     server.register_introspection_functions()
 
     banner_inicio()
@@ -313,6 +555,7 @@ if __name__ == "__main__":
         server.serve_forever()
     except KeyboardInterrupt:
         print("\n🛑 Deteniendo servidor...")
-        contabilidad.queue_inventario.put(None)  # Señal de parada al worker
+        # Señal de parada al worker
+        contabilidad.queue_inventario.put(None)
         contabilidad.worker_thread.join(timeout=5)
         print("✅ Servidor detenido correctamente")

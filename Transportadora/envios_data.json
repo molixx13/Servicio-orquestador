@@ -246,5 +246,21 @@
         "total": 100000.0,
         "estado": "Despachado",
         "fecha_envio": "2025-11-06 07:51:05"
+    },
+    {
+        "cliente": "Keivn",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-07 07:44:05"
+    },
+    {
+        "cliente": "Molixx",
+        "producto": "Mesa Ikea",
+        "cantidad": 1,
+        "total": 100000.0,
+        "estado": "Despachado",
+        "fecha_envio": "2025-11-07 07:44:52"
     }
 ]

@@ -310,5 +310,16 @@
             }
         ],
         "fecha": "2025-11-06 07:51:05"
+    },
+    {
+        "id": "COMP-20251107074452",
+        "proveedor": "ProveedorXYZ",
+        "productos": [
+            {
+                "nombre": "Mesa Ikea",
+                "cantidad": 10
+            }
+        ],
+        "fecha": "2025-11-07 07:44:52"
     }
 ]
